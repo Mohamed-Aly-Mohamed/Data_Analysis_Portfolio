@@ -1,0 +1,29 @@
+Analysis
+*The SQL query used to extract the data is included.
+*The query runs without error and pulls the intended data.
+Great job querying the temperature data! Notice you don't need to pull all the columns, as we're only interested in the year and average temperature. Although it doesn't change anything on this project, if you were to deploy an SQL query and let it execute thousands of times per day, pulling unnecessary columns would increase the computing costs.
+
+You also respected SQL best practices by making your SQL statements uppercase and writing them each on their own line, congratulations for that.
+
+*Moving averages are calculated to be used in the line chart.
+
+Great work on the calculation of the moving average! A 5-year moving average seems a little short but it gets the job done. There is no golden rule about the duration of the moving average. The tradeoff is between more information and how much noise we would like to remove. In this case, since we like to identify similarities but also differences. Therefore, we would like to choose the moving average that will allow us to identify common trends but also differences between the regions.
+
+Good job adding the method you used to calculate your moving average! It enables your reader to understand the method you used, and reproduce it if need be. Being able to reproduce a report or a study is important in the scientific method.
+
+*A line chart is included in the submission.
+*The chart and its axes have titles, and there's a clear legend (if applicable).
+Congratulations on a great visualization!
+
+The title allows us to know what the visualization is about
+The axes are clearly labeled so we know what we're looking at
+The legend makes it clear what each line refers to
+Your second graph is great. I would get rid of the first one as it is erroneous and almost made me require changes here before seing the second plot: the less recent years should be on the left, and the most recent on the right. However, specifying "Alexandria" in the legend instead of just "global" is more precise.
+
+Kudos for plotting the linear regression.
+
+*The student includes four observations about their provided data visualization.
+*The four observations are accurate.
+Excellent job on your observations! They are accurate and you were perfectly able to extract insights and information from the visualization. If you want to go the extra mile, you can formulate hypotheses to explain your different observations: for example, why is the global average less volatile than the Alexandria average, or why is the temperature increasing?
+
+Speaking of going the extra mile, kudos for calculating the correlation coefficient!
