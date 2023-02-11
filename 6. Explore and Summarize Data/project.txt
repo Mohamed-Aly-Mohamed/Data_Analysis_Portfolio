@@ -1,0 +1,499 @@
+Red Wine Exploration by Mohamed Aly
+========================================================
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+#knitr::opts_chunk$set( echo=FALSE,warning=FALSE,message=FALSE)
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk. This
+# prevents the code from displaying in the knitted HTML output. You should set
+# echo=FALSE for all code chunks in your file, unless it makes sense for your
+# report to show the code that generated a particular plot.
+
+# The other parameters for "message" and "warning" should also be set to FALSE
+# for other code chunks once you have verified that each plot comes out as you
+# want it to. This will clean up the flow of your report.
+
+knitr::opts_chunk$set(fig.width=9,fig.height=5,fig.path='Figs/',
+                      fig.align='center',tidy=TRUE,
+                      echo=FALSE,warning=FALSE,message=FALSE)
+
+
+#install.packages('ggplot2', dependencies = TRUE)
+#install.packages('knitr', dependencies = T)
+library(ggplot2)
+library(knitr)
+```
+> This report explores a dataset containing quality and attributes for approximately 1600 red wine samples.
+
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+rw <- read.csv('wineQualityReds.csv')
+
+# Explore the data structure
+dim(rw)
+str(rw)
+summary(rw)
+
+```
+
+> Our dataset consists of 13 variables , with almost 1600 observations
+
+# Univariate Plots Section
+
+
+```{r echo=FALSE, Univariate_Plots}
+# Histogram Distribution of Quality
+ggplot(aes(x = quality), data = rw) +
+  geom_histogram()
+
+```
+
+> It's clear that most wine quality is at the middle range between 5 and 6, with few number at low and high quality
+
+```{r echo=FALSE}
+# Histogram Distribution of fixed acidity
+
+ggplot(aes(x = fixed.acidity), data = rw) +
+  geom_histogram()+
+  scale_x_continuous(breaks = seq(4,16,1))
+```
+
+> fixed acidity mostly found at 7 and 8 
+
+```{r echo=FALSE}
+# Histogram Distribution of volatile acidity
+
+ggplot(aes(x = volatile.acidity), data = rw) +
+  geom_histogram()+
+  scale_x_continuous(breaks = seq(0,2,0.1))
+
+```
+
+> volatile acidity mostly found at 0.4 and 0.6
+
+```{r echo=FALSE}
+# Histogram Distribution of residual sugar
+
+ggplot(aes(x = residual.sugar), data = rw) +
+  geom_histogram()+
+  scale_x_log10()
+
+head(sort(table(rw$residual.sugar), decreasing = T))
+```
+
+> the residual sugar is mostly found to be 2, I used transformation to log scale to remove the long tail decrease in the count
+
+```{r echo=FALSE}
+# Histogram Distribution of pH
+
+ggplot(aes(x = pH), data = rw) +
+  geom_histogram()
+```
+
+> Most of the pH value is between 3 and 3.5 which is acidic
+
+```{r echo=FALSE}
+# Histogram Distribution of alcolhol
+
+ggplot(aes(x = alcohol), data = rw) +
+  geom_histogram()+
+  scale_x_continuous(breaks = seq(8,16,1))
+```
+
+> the alcoholic percentage seems to be mostly at 9.5%
+
+```{r echo=FALSE}
+# Histogram Distribution of citric acid
+
+ggplot(aes(x = citric.acid), data = rw) +
+  geom_histogram()
+```
+
+
+```{r echo=FALSE}
+# Histogram Distribution of chlorides with log 10 transformation
+
+ggplot(aes(x = chlorides), data = rw) +
+  geom_histogram()+
+  scale_x_log10()
+```
+
+> I used transformation to log scale to remove the long tail decrease in the count, it seems that it's between 0.03 and 0.2
+
+```{r echo=FALSE}
+# Histogram Distribution of free sulfur dioxide with log 10 transformation
+
+ggplot(aes(x = free.sulfur.dioxide), data = rw) +
+  geom_histogram()+
+  scale_x_log10()
+```
+
+```{r echo=FALSE}
+# Histogram Distribution of total sulfur dioxide with log 10 transformation
+
+ggplot(aes(x = total.sulfur.dioxide), data = rw) +
+  geom_histogram()+
+  scale_x_log10()
+```
+
+> the free and tolal sulfur dioxide have a wide range variance, I used transformation to log scale to remove the long tail decrease in the count
+
+```{r echo=FALSE}
+# Histogram Distribution of density
+
+ggplot(aes(x = density), data = rw) +
+  geom_histogram()
+```
+
+> the density range is between 0.9 and 1
+
+```{r echo=FALSE}
+# Histogram Distribution of sulphates with log 10 transformation
+
+ggplot(aes(x = sulphates), data = rw) +
+  geom_histogram()+
+  scale_x_log10()
+```
+
+> sulphates are mostly below 1, I used transformation to log scale to remove the long tail decrease in the count
+
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+
+> The dataset consists of 13 features with 1 variable as an index(X, fixed.acidity, volatile.acidity, citric.acid, residual.sugar, chlorides, free.sulfur.dioxide, total.sulfur.dioxide, density, pH, sulphates, alcohol, quality) and 1599 observations.
+
+> Observations:
+Most wine quality is at the middle range between 5 and 6
+The alcoholic percentage seems to be mostly at 9.5%
+Most of the pH value is between 3 and 3.5 which is acidic
+
+
+### What is/are the main feature(s) of interest in your dataset?
+
+>The main features in the data set are alcohol and quality I’d like to determine which features are best for predicting the quality of wine, I suspect alcohol and some combination of the other variables can be used to build a predictive model to quality wine.
+
+### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+
+> alcohol, pH, free.sulfur.dioxides, total.sulfur.dioxides, fixed.acidity, volatile.acidity, residual.sugar likely contribute to the quality of red wine. I think alcohol and fixed.acidity probably contribute most to the quality after researching information on wine quality.
+
+### Did you create any new variables from existing variables in the dataset?
+
+> No
+
+### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+
+>I log-transformed the right skewed sulphates, chlorides and any other right skewed distributions, to get a more suitable distribution to get a clear insight of the variable.
+
+# Bivariate Plots Section
+
+
+```{r echo=FALSE, Bivariate_Plots}
+# quality and alcohol scatterplot with smoothing and correlation test
+
+ggplot(aes(x = alcohol, y = quality), data = rw)+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('#F79420') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$quality, rw$alcohol)
+```
+
+> It's clear that for the same alcohol percentage, there is different wine quality. so, we can get that they are correlated (0.476).
+
+```{r echo=FALSE}
+# quality and fixed acidity scatterplot with smoothing and correlation test
+
+ggplot(aes(x = fixed.acidity, y = quality), data = rw)+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('#D34510') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$quality, rw$fixed.acidity)
+```
+
+> Also here, It's clear that for the same fixed acidity, there is different wine quality. so, we can get that they are very weak correlated (0.124). 
+
+
+```{r echo=FALSE}
+# quality and pH scatterplot with smoothing and correlation test
+
+ggplot(aes(x = pH, y = quality), data = rw)+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('#4510D3') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$quality, rw$pH)
+```
+
+> Also here, It's clear that for the same pH value, there is different wine quality. so, we can get that they are very weak correlated (-0.057).
+
+```{r echo=FALSE}
+# quality and residual sugar scatterplot with smoothing and correlation test
+
+ggplot(aes(x = residual.sugar, y = quality), data = rw)+
+  scale_x_log10()+
+  scale_y_continuous(lim = c(0, quantile(rw$quality, 0.99)))+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('#45D310') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$quality, rw$residual.sugar)
+```
+
+> Also here, It's clear that for the same residual sugar, there is different wine quality. so, we can get that they are very weak correlated (0.013). 
+
+```{r echo=FALSE}
+# quality and sulphates scatterplot with smoothing and correlation test
+
+ggplot(aes(x = sulphates, y = quality), data = rw)+
+  scale_x_continuous(lim = c(0, quantile(rw$sulphates, 0.99)))+
+  scale_y_continuous(lim = c(0, quantile(rw$quality, 0.99)))+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('red') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$quality, rw$sulphates)
+```
+
+> Here for the sulphates, It's quite different than that for residual sugar, It looks like they are quite correlated (0.251).
+
+```{r echo=FALSE}
+# sulphates and alcohol scatterplot with smoothing and correlation test
+
+ggplot(aes(x = sulphates, y = alcohol), data = rw)+
+  scale_x_continuous(lim = c(0, quantile(rw$sulphates, 0.99)))+
+  scale_y_continuous(lim = c(0, quantile(rw$alcohol, 0.99)))+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('yellow') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$alcohol, rw$sulphates)
+```
+
+> It seems that they are not strongly correlated (0.093)
+
+```{r echo=FALSE}
+# pH and alcohol scatterplot with smoothing and correlation test
+
+ggplot(aes(x = pH, y = alcohol), data = rw)+
+  scale_x_continuous(lim = c(0, quantile(rw$pH, 0.99)))+
+  scale_y_continuous(lim = c(0, quantile(rw$alcohol, 0.99)))+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('orange') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$alcohol, rw$pH)
+```
+
+> for the values less than 7 on the pH scale, This means more acidic.
+so, here for 3 to 4 scale we are on acidic range.
+
+```{r echo=FALSE}
+# pH and fixed acidity scatterplot with smoothing and correlation test
+
+ggplot(aes(x = pH, y = fixed.acidity), data = rw)+
+  scale_x_continuous(lim = c(0, quantile(rw$pH, 0.99)))+
+  scale_y_continuous(lim = c(0, quantile(rw$fixed.acidity, 0.99)))+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('grey') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$fixed.acidity, rw$pH)
+```
+
+> As the pH value increases the fixed acidity decreases which makes sense as it becomes neutral at the value of 7
+
+```{r echo=FALSE}
+# pH and volatile acidity scatterplot with smoothing and correlation test
+
+ggplot(aes(x = pH, y = volatile.acidity), data = rw)+
+  scale_x_continuous(lim = c(0, quantile(rw$pH, 0.99)))+
+  scale_y_continuous(lim = c(0, quantile(rw$volatile.acidity, 0.99)))+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('purple') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$volatile.acidity, rw$pH)
+```
+
+> It seems to be acceptable, as it's the opposite of the fixed acidity, we expect to see this relation even before we run the distribution.
+
+```{r echo=FALSE}
+# free and total sulfur dioxide scatterplot with smoothing and correlation test
+
+ggplot(aes(x = free.sulfur.dioxide, y = total.sulfur.dioxide), data = rw)+
+  scale_x_continuous(lim = c(0, quantile(rw$free.sulfur.dioxide, 0.99)))+
+  scale_y_continuous(lim = c(0, quantile(rw$total.sulfur.dioxide, 0.99)))+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('violet') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')
+
+cor.test(rw$free.sulfur.dioxide, rw$total.sulfur.dioxide)
+```
+
+> Free sulfur dioxide is positive correlated to total sulfur dioxide (0.667)
+
+```{r}
+# Quality and alcohol boxplot distribution
+ggplot(aes(x = quality, y = alcohol), data = rw)+
+  geom_boxplot()
+```
+
+
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+
+> quality correlates strongly with alcohol than other variables, so we can say that alcohol is a good variable to predict the quality of red wine. but with the aid of other features like pH, fixed.acidity and other features. we can get the full picture. as they are not correlated on each other as we see on alcohol and pH distribution.
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+> As the pH value increases the fixed acidity decreases which makes sense as it becomes neutral at the value of 7, they are strongly negative correlated.
+when we change the fixed acidity with volatile acidity it becomes the opposite which makes sense.
+
+### What was the strongest relationship you found?
+
+> The fixed acidity is negative and strongly correlated with the pH value
+
+# Multivariate Plots Section
+
+
+```{r echo=FALSE, Multivariate_Plots}
+# quality and alcohol scatterplot, colored with pH 
+
+ggplot(aes(x = alcohol, y = quality), data = rw)+
+  geom_point(alpha = 0.2,aes(color = pH) , position = 'jitter')
+```
+
+```{r echo=FALSE}
+# quality and fixed acidity scatterplot, colored with alcohol 
+
+ggplot(aes(x = fixed.acidity, y = quality), data = rw)+
+  geom_point(alpha = 0.2,aes(color = alcohol) , position = 'jitter')
+```
+
+```{r echo=FALSE}
+# quality and alcohol scatterplot, colored with total sulfur dioxide 
+
+ggplot(aes(x = alcohol, y = quality), data = rw)+
+  geom_point(alpha = 0.2,aes(color = total.sulfur.dioxide) , position = 'jitter')
+```
+
+> for the above figures, i tried different combinations of different variables to get a better intuition of how they merge together.
+
+```{r echo=FALSE}
+# pH and alcohol scatterplot, colored with fixed acidity 
+# and wraped with quality 
+
+ggplot(aes(x = alcohol, y = pH), data = rw)+
+  geom_point(alpha = 0.2,aes(color = fixed.acidity) , position = 'jitter')+
+  facet_wrap(~quality)
+```
+
+
+```{r echo=FALSE}
+# pH and alcohol scatterplot, colored with chlorides 
+# and wraped with quality 
+
+ggplot(aes(x = alcohol, y = pH), data = rw)+
+  geom_point(alpha = 0.2,aes(color = chlorides) , position = 'jitter')+
+  facet_wrap(~quality)
+```
+
+```{r echo=FALSE}
+# sulphates and alcohol scatterplot, colored with chlorides 
+# and wraped with quality 
+
+ggplot(aes(x = alcohol, y = sulphates), data = rw)+
+  geom_point(alpha = 0.2,aes(color = chlorides) , position = 'jitter')+
+  facet_wrap(~quality)
+```
+
+```{r echo=FALSE}
+# sulphates and alcohol scatterplot, colored with citric acid
+# and wraped with quality 
+
+ggplot(aes(x = alcohol, y = sulphates), data = rw)+
+  geom_point(alpha = 0.2,aes(color = citric.acid) , position = 'jitter')+
+  facet_wrap(~quality)
+```
+
+> I make facet wrap using quality, as it's the only integer variable, that we can observe as a result for different features or parameters together.
+
+```{r echo=FALSE}
+# free and total sulfur dioxides scatterplot, colored with alcohol
+
+ggplot(aes(x = free.sulfur.dioxide, y = total.sulfur.dioxide), data = rw)+
+  geom_point(alpha = 0.2,aes(color = alcohol) , position = 'jitter')
+```
+
+```{r echo=FALSE}
+# free and total sulfur dioxides scatterplot, colored with alcohol
+# and wraped with quality
+
+ggplot(aes(x = free.sulfur.dioxide, y = total.sulfur.dioxide), data = rw)+
+  geom_point(alpha = 0.2,aes(color = alcohol) , position = 'jitter')+
+  facet_wrap(~quality)
+```
+
+> By adding facet wrap using quality, it's clear the effect of these features on wine quality.
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+
+> As a result of trying different combinations of features, it seems that it depends on them all together, there is no unique or specefic feature that influences the wine quality on it's own, but different combinations of features with a considerable effect of alcohol than other features.
+
+### Were there any interesting or surprising interactions between features?
+
+> A lot of features have no great effect on quality of wine, but a combination of different features together make the effect.
+
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+# Quality Histogram
+
+ggplot(aes(x = quality), data = rw) +
+  geom_histogram(fill = I('red'), color = I('black'))+
+  ggtitle('Red Wine Quality on a scale from (0 -> 10)')
+```
+
+### Description One
+> It's obvious that finding a high quality red wine is rare, and also for low quality wine.
+we can find red wine quality to be mostly 5 or 6.
+this distribution shows us the resultant red wine quality of our dataset.
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+# smoothed quality and alcohol scatterplot
+
+ggplot(aes(x = alcohol, y = quality), data = rw)+
+  geom_point(alpha = 0.2, position = 'jitter', fill = I('#F79420') , color = I('black') , shape = 21)+
+  stat_smooth(method = 'lm')+
+  ggtitle('Red wine quality by alcohol percentage')+
+  scale_x_continuous(name = 'alcohol percentage %')
+```
+
+### Description Two
+> The most feature the affects the red wine quality from our dataset is the alcohol percentage, which seems to be positive correlated with the wine quality.
+
+### Plot Three
+```{r echo=FALSE, Plot_Three}
+# free and total sulfur dioxides scatterplot, colored with alcohol
+# and wraped with quality
+
+ggplot(aes(x = free.sulfur.dioxide, y = total.sulfur.dioxide), data = rw)+
+  geom_point(alpha = 0.2,aes(color = alcohol) , position = 'jitter')+
+  facet_wrap(~quality)+
+  ggtitle('Facet wrap by quality with sulfur dioxide and alcohol effect ')
+
+```
+
+### Description Three
+A combination of many features, improves our intuition of how these features affects red wine quality.
+each feature has a different percentage of effect on wine quality as obviuos on the above distribution.
+------
+
+# Reflection
+
+> I started exploring the red wine data variables and noticed the distribution of each feature alone in order to make an insight of the dataset features, to make full use of them in my exploration.
+I founf that alcohol percentage is the most feature that is positive correlated with the quality, so i depends on it.
+I faced some difficulties exploring the dataset, as there are no categorical features, which would help me in classifying the data and notice the effect of different categories on the same feature.
+Also using an old dataset (2009) may deceive your intuition of the red wine quality for today.
+For future exploration, I think larger and updated dataset may be helpful for better reliabilty, with some categorical features it will be great.
+
